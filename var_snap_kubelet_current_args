@@ -1,0 +1,1 @@
+--config=/var/lib/kubelet/config.yaml --container-runtime=remote --container-runtime-endpoint=unix:///run/crio/crio.sock --feature-gates=IPv6DualStack=true --kubeconfig=/etc/kubernetes/kubelet.conf --network-plugin=cni --node-ip=
