@@ -1,7 +1,12 @@
 #!/bin/bash
 shopt -s expand_aliases
+#!/bin/bash
+shopt -s expand_aliases
 alias ip4a='/sbin/ip -4 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}"'
-alias ip6a='/sbin/ip -6 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'                                                                                                                                                    
+alias ip6a='/sbin/ip -6 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
+
+alias POD_CIDR='echo "1100:200::"'
+alias POD_SVC_CIDR='echo "1101:200:1:2::"'
 
 set -euo pipefail
 
@@ -34,7 +39,7 @@ yq eval 'select(di == 0) .nodeRegistration.criSocket = "unix:///var/run/crio/cri
 yq eval "select(di == 0) .nodeRegistration.name = \"$(hostname)\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .localAPIEndpoint.advertiseAddress= \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.node-ip = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.cluster-dns = \"1100:200:96::a\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.cluster-dns = \"$(POD_SVC_CIDR)a\"" -i "$KUBEADM_CONFIG"
 yq eval 'select(di == 0) .nodeRegistration.kubeletExtraArgs.container-runtime = "remote"' -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.container-runtime-endpoint = \"unix:///run/crio/crio.sock\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.cgroup-driver=\"cgroupfs\"" -i "$KUBEADM_CONFIG"
@@ -45,19 +50,19 @@ yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.kubeconfig=\"/etc/ku
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.config=\"/var/lib/kubelet/config.yaml\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.feature-gates=\"IPv6DualStack=true\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controlPlaneEndpoint = \"[$(ip6a)]:6443\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .networking.serviceSubnet = \"1100:200:96::/112\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .scheduler.extraArgs.address = \"1100:200::1\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .networking.serviceSubnet = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .scheduler.extraArgs.address = \"$(POD_CIDR)1\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .scheduler.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.enable-hostpath-provisioner = \"true\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"1100:200:244::/104\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"$(POD_CIDR):244::/104\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.node-cidr-mask-size = \"120\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .controllerManager.extraArgs.service-cluster-ip-range = \"1100:200:96::/112\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .apiServer.certSANs = [ \"localhost\", \"::1\", \"$(ip6a)\", \"1100:200::1\", \"1100:200:96::1\", \"1100:200:96::a\"]" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .controllerManager.extraArgs.service-cluster-ip-range = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .apiServer.certSANs = [ \"localhost\", \"::1\", \"$(ip6a)\", \"$(POD_CIDR)1\", \"$(POD_SVC_CIDR)1\", \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .apiServer.extraArgs.advertise-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .apiServer.extraArgs.anonymous-auth = \"true\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .apiServer.extraArgs.etcd-servers = \"https://[$(ip6a)]:2379\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .apiServer.extraArgs.service-cluster-ip-range = \"1100:200:96::/112\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .apiServer.extraArgs.service-cluster-ip-range = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .etcd.local.dataDir = \"/var/lib/etcd\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .etcd.local.extraArgs.advertise-client-urls = \"https://[$(ip6a)]:2379\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .etcd.local.extraArgs.initial-advertise-peer-urls = \"https://[$(ip6a)]:2380\"" -i "$KUBEADM_CONFIG"
@@ -67,5 +72,6 @@ yq eval "select (di == 1) .etcd.local.extraArgs.listen-peer-urls = \"https://[$(
 yq eval "select(di == 2) .authentication.anonymous.enabled = true" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .authentication.webhook.enabled = false" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .authorization.mode = \"AlwaysAllow\"" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 2) .clusterDNS = [ \"1100:200:96::a\"]" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 2) .clusterDNS = [ \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .healthzBindAddress = \"::1\"" -i "$KUBEADM_CONFIG"
+
