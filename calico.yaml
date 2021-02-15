@@ -1,13 +1,4 @@
 ---
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: kubernetes-services-endpoint
-  namespace: kube-system
-data:
-  KUBERNETES_SERVICE_PORT: n6443
-  KUBERNETES_NODE_NAME: "cgroovy"
----
 # Source: calico/templates/calico-config.yaml
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -39,7 +30,7 @@ data:
           "log_file_path": "/var/log/calico/cni/cni.log",
           "datastore_type": "kubernetes",
           "nodename": "__KUBERNETES_NODE_NAME__",
-          "mtu": __CNI_MTU__,
+          "mtu": 1500,
           "ipam": {
               "type": "calico-ipam",
               "assign_ipv4": "false",
@@ -3626,11 +3617,13 @@ spec:
             - name: CLUSTER_TYPE
               value: "k8s,bgp"
             # Auto-detect the BGP IP address.
+            - name: IP
+              value: "none"
             - name: IP6
               value: "autodetect"
             # Enable IPIP
             - name: CALICO_IPV4POOL_IPIP
-              value: "Always"
+              value: "Never"
             # Enable or Disable VXLAN on the default IP pool.
             - name: CALICO_IPV4POOL_VXLAN
               value: "Never"
@@ -3815,6 +3808,8 @@ spec:
               value: node
             - name: DATASTORE_TYPE
               value: kubernetes
+            - name: DEBUG_LEVEL
+              value: debug
           readinessProbe:
             exec:
               command:
@@ -3854,5 +3849,3 @@ spec:
 
 ---
 # Source: calico/templates/configure-canal.yaml
-
-
