@@ -74,4 +74,4 @@ yq eval "select(di == 2) .authentication.webhook.enabled = false" -i "$KUBEADM_C
 yq eval "select(di == 2) .authorization.mode = \"AlwaysAllow\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .clusterDNS = [ \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .healthzBindAddress = \"::1\"" -i "$KUBEADM_CONFIG"
-
+yq eval "select(di == 2) .groupDriver = \"cgroupfs\"" -i "$KUBEADM_CONFIG"
