@@ -1,13 +1,10 @@
 #!/bin/bash
 shopt -s expand_aliases
-#!/bin/bash
-shopt -s expand_aliases
 alias ip4a='/sbin/ip -4 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}"'
 alias ip6a='/sbin/ip -6 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
 
 alias POD_CIDR='echo "1100:200::"'
-alias POD_SVC_CIDR='echo "1101:200:1:2::"'
-
+alias POD_SVC_CIDR='echo "1101:300:1:2::"'
 set -euo pipefail
 
 KUBEADM_CONFIG="${1-kubeadm.yaml}"
@@ -37,7 +34,7 @@ kubeadm config print init-defaults --component-configs=KubeletConfiguration > "$
 
 yq eval 'select(di == 0) .nodeRegistration.criSocket = "unix:///var/run/crio/crio.sock"' -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.name = \"$(hostname)\"" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 0) .localAPIEndpoint.advertiseAddress= \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 0) .localAPIEndpoint.advertiseAddress = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.node-ip = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.cluster-dns = \"$(POD_SVC_CIDR)a\"" -i "$KUBEADM_CONFIG"
 yq eval 'select(di == 0) .nodeRegistration.kubeletExtraArgs.container-runtime = "remote"' -i "$KUBEADM_CONFIG"
@@ -49,13 +46,14 @@ yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.authorization-mode=\
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.kubeconfig=\"/etc/kubernetes/kubelet.conf\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.config=\"/var/lib/kubelet/config.yaml\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.feature-gates=\"IPv6DualStack=true\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .kubernetesVersion=\"1.20.2\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controlPlaneEndpoint = \"[$(ip6a)]:6443\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .networking.serviceSubnet = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .scheduler.extraArgs.address = \"$(POD_CIDR)1\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .scheduler.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.enable-hostpath-provisioner = \"true\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"$(POD_CIDR):244::/104\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"$(POD_CIDR)/104\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.node-cidr-mask-size = \"120\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.service-cluster-ip-range = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .apiServer.certSANs = [ \"localhost\", \"::1\", \"$(ip6a)\", \"$(POD_CIDR)1\", \"$(POD_SVC_CIDR)1\", \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
@@ -74,4 +72,6 @@ yq eval "select(di == 2) .authentication.webhook.enabled = false" -i "$KUBEADM_C
 yq eval "select(di == 2) .authorization.mode = \"AlwaysAllow\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .clusterDNS = [ \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .healthzBindAddress = \"::1\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 2) .serverTLSBootstrap = true" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .cgroupDriver = \"cgroupfs\"" -i "$KUBEADM_CONFIG"
+
