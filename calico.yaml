@@ -1,7 +1,7 @@
----
-# Source: calico/templates/calico-config.yaml
-# This ConfigMap is used to configure a self-hosted Calico installation.
-kind: ConfigMap
+---                                                                                                                                                                                                                                         
+# Source: calico/templates/calico-config.yaml                                                                                                                                                                                               
+# This ConfigMap is used to configure a self-hosted Calico installation.                                                                                                                                                                    
+kind: ConfigMap                                                                                                                                                                                                                             
 apiVersion: v1
 metadata:
   name: calico-config
@@ -34,7 +34,8 @@ data:
           "ipam": {
               "type": "calico-ipam",
               "assign_ipv4": "false",
-              "assign_ipv6": "true"
+              "assign_ipv6": "true",
+              "ipv6_pools": ["1100:200::/104", "1101:300:1:2::/112"]
           },
           "policy": {
               "type": "k8s"
@@ -3596,6 +3597,12 @@ spec:
               name: kubernetes-services-endpoint
               optional: true
           env:
+            - name: CALICO_MANAGE_CNI
+              value: "true"
+              #            - name: CALICO_IPV6POOL_CIDR
+              #value: "1100:200::/112"
+            - name: IP6_AUTODETECTION_METHOD
+              value: "interface=eth0"
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"
@@ -3613,6 +3620,10 @@ spec:
                 configMapKeyRef:
                   name: calico-config
                   key: calico_backend
+            - name: NO_DEFAULT_POOLS
+              value: "true"
+            - name: CALICO_ROUTER_ID
+              value: "hash"
             # Cluster type to identify the deployment type
             - name: CLUSTER_TYPE
               value: "k8s,bgp"
@@ -3849,3 +3860,4 @@ spec:
 
 ---
 # Source: calico/templates/configure-canal.yaml
+
