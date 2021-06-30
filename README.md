@@ -1,3 +1,5 @@
+refer to [this](https://www.eclipse.org/che/docs/che-7/installation-guide/installing-che-on-minikube/) for context
+
 node commands:
 
 shared root :shrugs:
