@@ -1,4 +1,8 @@
 refer to [this](https://www.eclipse.org/che/docs/che-7/installation-guide/installing-che-on-minikube/) for context
+following those docs and this config generator script allows for baremetal pure-ipv6 kubernetes nodes spinup using a ubuntu LXC container 
+all kube packages provided by snap inside the container
+cri-o provided by apt official repo in download.opensuse.org/repositories/
+advice: use groupfs instead of systemd for cri-o
 
 node commands:
 
