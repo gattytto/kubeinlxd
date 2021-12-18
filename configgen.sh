@@ -47,7 +47,7 @@ yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.authorization-mode=\
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.kubeconfig=\"/etc/kubernetes/kubelet.conf\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.config=\"/var/lib/kubelet/config.yaml\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.feature-gates=\"IPv6DualStack=true\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .kubernetesVersion=\"1.20.2\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .kubernetesVersion=\"1.23.0\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controlPlaneEndpoint = \"[$(ip6a)]:6443\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .networking.serviceSubnet = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .scheduler.extraArgs.address = \"$(POD_CIDR)1\"" -i "$KUBEADM_CONFIG"
