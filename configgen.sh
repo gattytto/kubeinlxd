@@ -1,7 +1,7 @@
 #!/bin/bash
-shopt -s expand_aliases
-alias ip4a='/sbin/ip -4 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}"'
-alias ip6a='/sbin/ip -6 -o addr show dev eth0| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
+curdev="$(ip route get 8.8.8.8 | sed -nr 's/.*dev ([^\ ]+).*/\1/p')"
+alias ip4a='/sbin/ip -4 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}"'
+alias ip6a='/sbin/ip -6 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
 
 alias POD_CIDR='echo "1100:200::"'
 alias POD_SVC_CIDR='echo "1101:300:1:2::"'
