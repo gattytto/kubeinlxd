@@ -3348,6 +3348,10 @@ rules:
       - patch
       # Calico stores some configuration information in node annotations.
       - update
+  # Watch for changes to Kubernetes EndpointSlices
+  - apiGroups: ["discovery.k8s.io"]
+    resources:
+      - endpointslices
   # Watch for changes to Kubernetes NetworkPolicies.
   - apiGroups: ["networking.k8s.io"]
     resources:
@@ -3387,6 +3391,7 @@ rules:
       - clusterinformations
       - hostendpoints
       - blockaffinities
+      - caliconodestatuses
     verbs:
       - get
       - list
@@ -3690,7 +3695,7 @@ spec:
               command:
               - /bin/calico-node
               - -felix-live
-              - -bird-live
+              - -bird6-live
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
@@ -3699,7 +3704,7 @@ spec:
               command:
               - /bin/calico-node
               - -felix-ready
-              - -bird-ready
+              - -bird6-ready
             periodSeconds: 10
           volumeMounts:
             - mountPath: /lib/modules
