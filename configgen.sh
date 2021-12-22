@@ -75,4 +75,4 @@ yq eval "select(di == 2) .clusterDNS = [ \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CON
 yq eval "select(di == 2) .healthzBindAddress = \"::1\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .serverTLSBootstrap = true" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .cgroupDriver = \"cgroupfs\"" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 2) .enforceNodeAllocatable = \"pods\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 2) .enforceNodeAllocatable[0] = \"pods\"" -i "$KUBEADM_CONFIG"
