@@ -3523,7 +3523,7 @@ spec:
               #            - name: CALICO_IPV6POOL_CIDR
               #value: "1100:200::/112"
             - name: IP6_AUTODETECTION_METHOD
-              value: "interface=enp5s0"
+              value: "can-reach=2606:4700:4700::1111"
             # Use Kubernetes API as the backing datastore.
             - name: DATASTORE_TYPE
               value: "kubernetes"
