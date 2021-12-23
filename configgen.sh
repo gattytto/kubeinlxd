@@ -1,6 +1,7 @@
 #!/bin/bash
 shopt -s expand_aliases
 curdev="$(ip route get 8.8.8.8 | sed -nr 's/.*dev ([^\ ]+).*/\1/p')"
+kubeversion=$(kubeadm version -o short | awk '{ print substr($1,2)}')
 alias ip4a='/sbin/ip -4 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}"'
 alias ip6a='/sbin/ip -6 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
 
@@ -47,7 +48,7 @@ yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.authorization-mode=\
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.kubeconfig=\"/etc/kubernetes/kubelet.conf\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.config=\"/var/lib/kubelet/config.yaml\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.feature-gates=\"IPv6DualStack=true\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .kubernetesVersion=\"1.23.0\"" -i "$KUBEADM_CONFIG"
+yq eval "select (di == 1) .kubernetesVersion=\"$kubeversion\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controlPlaneEndpoint = \"[$(ip6a)]:6443\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .networking.serviceSubnet = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .scheduler.extraArgs.address = \"$(POD_CIDR)1\"" -i "$KUBEADM_CONFIG"
