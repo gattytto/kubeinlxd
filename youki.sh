@@ -9,6 +9,7 @@ apt install -y \
       libelf-dev \
       libseccomp-dev
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source $HOME/.cargo/env
 wget -qO- https://github.com/containers/youki/zipball/main | bsdtar -xvf- -C ./ && mv containers-youki* youki
 cd youki && bash ./build.sh && cd ..
 cp youki/youki /usr/bin/ && chmod +x /usr/bin/youki
