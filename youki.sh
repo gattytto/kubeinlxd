@@ -11,7 +11,8 @@ apt install -y \
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
 cd /root/kubeinlxd
-wget -qO- https://github.com/containers/youki/zipball/main | bsdtar -xvf- -C ./ && mv containers-youki* youki
+#wget -qO- https://github.com/containers/youki/zipball/main | bsdtar -xvf- -C ./ && mv containers-youki* youki
+git clone https://github.com/containers/youki
 cd youki && bash ./build.sh && cd ..
 cp youki/youki /usr/bin/ && chmod +x /usr/bin/youki
 rm -rf youki
