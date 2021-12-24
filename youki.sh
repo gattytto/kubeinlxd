@@ -26,7 +26,7 @@ EOF
 fi
 
 systemctl reload crio
-if test -f "$FILE"; then
+if test -f /etc/kubernetes/admin.conf; then
   export KUBECONFIG=/etc/kubernetes/admin.conf
   cat <<EOF | kubectl apply -f -
   apiVersion: node.k8s.io/v1
