@@ -1,4 +1,16 @@
 #!/bin/bash
+if test -f /etc/kubernetes/admin.conf; then
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+  cat <<EOF | kubectl apply -f -
+  apiVersion: node.k8s.io/v1
+  kind: RuntimeClass
+  metadata:
+    name: youki
+  handler: youki
+EOF
+exit
+fi
+
 apt install -y \
       curl               \
       libarchive-tools   \
@@ -27,17 +39,7 @@ EOF
 fi
 
 systemctl reload crio
-if test -f /etc/kubernetes/admin.conf; then
-  export KUBECONFIG=/etc/kubernetes/admin.conf
-  cat <<EOF | kubectl apply -f -
-  apiVersion: node.k8s.io/v1
-  kind: RuntimeClass
-  metadata:
-    name: youki
-  handler: youki
-EOF
 
-fi
 apt remove -y \
       curl               \
       libarchive-tools   \
