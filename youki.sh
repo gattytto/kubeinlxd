@@ -13,6 +13,7 @@ source $HOME/.cargo/env
 wget -qO- https://github.com/containers/youki/zipball/main | bsdtar -xvf- -C ./ && mv containers-youki* youki
 cd youki && bash ./build.sh && cd ..
 cp youki/youki /usr/bin/ && chmod +x /usr/bin/youki
+rm -rf youki
 
 cat <<'EOF' >> /etc/crio/crio.conf
 [crio.runtime.runtimes.youki]
@@ -30,3 +31,13 @@ metadata:
   name: youki
 handler: youki
 EOF
+apt remove -y \
+      curl               \
+      libarchive-tools   \
+      pkg-config         \
+      libsystemd-dev     \
+      libdbus-glib-1-dev \
+      build-essential    \
+      libelf-dev \
+      libseccomp-dev
+apt clean
