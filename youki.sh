@@ -38,7 +38,7 @@ runtime_root = "/run/youki"
 EOF
 fi
 
-systemctl reload crio
+systemctl reload crio && systemctl restart crio kubelet
 
 apt remove -y \
       curl               \
