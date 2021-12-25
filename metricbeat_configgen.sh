@@ -16,6 +16,4 @@ if [ ! $(which yq) ]; then
     exit 1
 fi
 
-#yq eval 'select(di != 4) .metadata.namespace = "$NAMESPACE"' -i "$MB_MF"
-#yq eval 'select(di == 2) | select(.spec.template.spec.containers.name == "metricbeat") .env[3].secretKeyRef = [{\"name\":"$SEC_KEY_REF","key":"elastic"}]' -P -i "$MB_MF"
-yq eval 'select(di == 2) | .spec.template.spec.containers.[]| select(.name == "metricbeat").env[3].secretKeyRef=[{"name":"$SEC_KEY_REF","key":"elastic"}]' -P -i "$MB_MF"
+yq eval "select(di == 2).spec.template.spec.containers[0].env[3].secretKeyRef = [{\"name\":\"$SEC_KEY_REF\",\"key\":\"elastic\"}]" -P -i metricbeat-kubernetes.yaml
