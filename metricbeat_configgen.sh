@@ -3,7 +3,7 @@ shopt -s expand_aliases
 
 set -euo pipefail
 NAMESPACE="elastic-system"
-MB_VERSION="7.16.2"
+MB_VERSION="7.16"
 MB_MF="${1-metricbeat-kubernetes.yaml}"
 SEC_KEY_REF="elasticsearch-sample-es-elastic-user"
 echo "Printing to $MB_MF"
