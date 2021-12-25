@@ -15,5 +15,5 @@ if [ ! $(which yq) ]; then
     echo "please install yq"
     exit 1
 fi
-
-yq eval "select(di == 2).spec.template.spec.containers[0].env[3].secretKeyRef = [{\"name\":\"$SEC_KEY_REF\",\"key\":\"elastic\"}]" -P -i metricbeat-kubernetes.yaml
+yq eval "del(select(di == 2).spec.template.spec.containers[0].env[3].value)" -P -i metricbeat-kubernetes.yaml
+yq eval "select(di == 2).spec.template.spec.containers[0].env[3].valueFrom.secretKeyRef = {\"name\":\"$SEC_KEY_REF\",\"key\":\"elastic\"}" -P -i metricbeat-kubernetes.yaml
