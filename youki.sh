@@ -49,4 +49,4 @@ apt remove -y \
       build-essential    \
       libelf-dev \
       libseccomp-dev
-apt clean
+apt autoremove -y && apt clean && systemctl restart crio kubelet
