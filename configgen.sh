@@ -44,7 +44,7 @@ yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.container-runtime-en
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.cgroup-driver=\"cgroupfs\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.environmentFile=\"/var/lib/kubelet/kubeadm-flags.env\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.network-plugin=\"cni\"" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.authorization-mode=\"BDAC\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.authorization-mode=\"RBAC\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.kubeconfig=\"/etc/kubernetes/kubelet.conf\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.config=\"/var/lib/kubelet/config.yaml\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.kubeletExtraArgs.feature-gates=\"IPv6DualStack=true\"" -i "$KUBEADM_CONFIG"
@@ -71,7 +71,8 @@ yq eval "select (di == 1) .etcd.local.extraArgs.listen-client-urls = \"https://[
 yq eval "select (di == 1) .etcd.local.extraArgs.listen-peer-urls = \"https://[$(ip6a)]:2380\"" -i "$KUBEADM_CONFIG"
 #yq eval "select(di == 2) .authentication.anonymous.enabled = true" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .authentication.webhook.enabled = false" -i "$KUBEADM_CONFIG"
-yq eval "select(di == 2) .authorization.mode = \"RBAC\"" -i "$KUBEADM_CONFIG"
+yq eval "select(di == 2) .
+tion.mode = \"RBAC\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .clusterDNS = [ \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .healthzBindAddress = \"::1\"" -i "$KUBEADM_CONFIG"
 yq eval "select(di == 2) .serverTLSBootstrap = true" -i "$KUBEADM_CONFIG"
