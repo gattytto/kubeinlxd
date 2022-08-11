@@ -32,7 +32,7 @@ if [ ! $(which kubeadm) ]; then
     exit 1
 fi
 
-kubeadm config print init-defaults --component-configs=KubeletConfiguration > "$KUBEADM_CONFIG"
+kubeadm config print init-defaults --component-configs=KubeletConfiguration | tee $KUBEADM_CONFIG > /dev/null
 
 yq eval 'select(di == 0) .nodeRegistration.criSocket = "unix:///var/run/crio/crio.sock"' -i "$KUBEADM_CONFIG"
 yq eval "select(di == 0) .nodeRegistration.name = \"$(hostname)\"" -i "$KUBEADM_CONFIG"
