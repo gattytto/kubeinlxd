@@ -1,0 +1,122 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+bootstrapTokens:
+  - groups:
+      - system:bootstrappers:kubeadm:default-node-token
+    token: abcdef.0123456789abcdef
+    ttl: 24h0m0s
+    usages:
+      - signing
+      - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 2001:470:1b1e:c000:216:3eff:fe50:7878
+  bindPort: 6443
+nodeRegistration:
+  criSocket: unix:///var/run/crio/crio.sock
+  imagePullPolicy: IfNotPresent
+  name: boss-haddock
+  taints: null
+  kubeletExtraArgs:
+    node-ip: 2001:470:1b1e:c000:216:3eff:fe50:7878
+    cluster-dns: 1101:300:1:2::a
+    container-runtime: remote
+    container-runtime-endpoint: unix:///run/crio/crio.sock
+    cgroup-driver: cgroupfs
+    environmentFile: /var/lib/kubelet/kubeadm-flags.env
+    network-plugin: cni
+    authorization-mode: RBAC
+    kubeconfig: /etc/kubernetes/kubelet.conf
+    config: /var/lib/kubelet/config.yaml
+---
+apiServer:
+  timeoutForControlPlane: 4m0s
+  certSANs:
+    - localhost
+    - ::1
+    - 2001:470:1b1e:c000:216:3eff:fe50:7878
+    - 1100:200::1
+    - 1101:300:1:2::1
+    - 1101:300:1:2::a
+  extraArgs:
+    advertise-address: 2001:470:1b1e:c000:216:3eff:fe50:7878
+    authorization-mode: Node,RBAC
+    etcd-servers: https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2379
+    service-cluster-ip-range: 1101:300:1:2::/112
+apiVersion: kubeadm.k8s.io/v1beta3
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+controllerManager:
+  extraArgs:
+    bind-address: 2001:470:1b1e:c000:216:3eff:fe50:7878
+    enable-hostpath-provisioner: "true"
+    cluster-cidr: 1100:200::/104
+    node-cidr-mask-size: "120"
+    service-cluster-ip-range: 1101:300:1:2::/112
+dns: {}
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+    extraArgs:
+      advertise-client-urls: https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2379
+      initial-advertise-peer-urls: https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2380
+      initial-cluster: boss-haddock=https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2380
+      listen-client-urls: https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2379
+      listen-peer-urls: https://[2001:470:1b1e:c000:216:3eff:fe50:7878]:2380
+imageRepository: registry.k8s.io
+kind: ClusterConfiguration
+kubernetesVersion: 1.26.0
+networking:
+  dnsDomain: cluster.local
+  serviceSubnet: 1101:300:1:2::/112
+scheduler:
+  extraArgs:
+    bind-address: 2001:470:1b1e:c000:216:3eff:fe50:7878
+controlPlaneEndpoint: '[2001:470:1b1e:c000:216:3eff:fe50:7878]:6443'
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    cacheTTL: 0s
+    enabled: false
+  x509:
+    clientCAFile: /etc/kubernetes/pki/ca.crt
+authorization:
+  mode: Webhook
+  webhook:
+    cacheAuthorizedTTL: 0s
+    cacheUnauthorizedTTL: 0s
+cgroupDriver: cgroupfs
+clusterDNS:
+  - 1101:300:1:2::a
+clusterDomain: cluster.local
+cpuManagerReconcilePeriod: 0s
+evictionPressureTransitionPeriod: 0s
+fileCheckFrequency: 0s
+healthzBindAddress: ::1
+healthzPort: 10248
+httpCheckFrequency: 0s
+imageMinimumGCAge: 0s
+kind: KubeletConfiguration
+logging:
+  flushFrequency: 0
+  options:
+    json:
+      infoBufferSize: "0"
+  verbosity: 0
+memorySwap: {}
+nodeStatusReportFrequency: 0s
+nodeStatusUpdateFrequency: 0s
+resolvConf: /run/systemd/resolve/resolv.conf
+rotateCertificates: true
+runtimeRequestTimeout: 0s
+shutdownGracePeriod: 0s
+shutdownGracePeriodCriticalPods: 0s
+staticPodPath: /etc/kubernetes/manifests
+streamingConnectionIdleTimeout: 0s
+syncFrequency: 0s
+volumeStatsAggPeriod: 0s
+serverTLSBootstrap: true
+enforceNodeAllocatable:
+  - pods

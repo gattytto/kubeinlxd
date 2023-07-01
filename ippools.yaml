@@ -4,10 +4,26 @@ kind: IPPool
 metadata:
   name: pods
 spec:
-  cidr: 1100:200::/104
+  blockSize: 122
+  cidr: 1100:200::/106
+  ipipMode: Never
   natOutgoing: true
+  nodeSelector: kubernetes.io/hostname != 'ubuntu'
+  vxlanMode: Never
   disabled: false
-  nodeSelector: all()
+---
+apiVersion: projectcalico.org/v3
+kind: IPPool
+metadata:
+  name: pods2
+spec:
+  blockSize: 122
+  cidr: 1100:0200:0000:0000:0000:0000:0040:0000/106 
+  ipipMode: Never
+  natOutgoing: true
+  nodeSelector: kubernetes.io/hostname == 'ubuntu'
+  vxlanMode: Never
+  disabled: false
 ---
 apiVersion: projectcalico.org/v3
 kind: IPPool
