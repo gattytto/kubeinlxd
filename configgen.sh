@@ -53,7 +53,7 @@ yq eval "select (di == 1) .networking.serviceSubnet = \"$(POD_SVC_CIDR)/112\"" -
 yq eval "select (di == 1) .scheduler.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.bind-address = \"$(ip6a)\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.enable-hostpath-provisioner = \"true\"" -i "$KUBEADM_CONFIG"
-yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"$(POD_CIDR)/104\"" -i "$KUBEADM_CONFIG"
+#yq eval "select (di == 1) .controllerManager.extraArgs.cluster-cidr = \"$(POD_CIDR)/104\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.node-cidr-mask-size = \"120\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .controllerManager.extraArgs.service-cluster-ip-range = \"$(POD_SVC_CIDR)/112\"" -i "$KUBEADM_CONFIG"
 yq eval "select (di == 1) .apiServer.certSANs = [ \"localhost\", \"::1\", \"$(ip6a)\", \"$(POD_CIDR)1\", \"$(POD_SVC_CIDR)1\", \"$(POD_SVC_CIDR)a\"]" -i "$KUBEADM_CONFIG"
