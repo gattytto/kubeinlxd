@@ -71,8 +71,7 @@ data:
           "ipam": {
               "type": "calico-ipam",
               "assign_ipv4": "false",
-              "assign_ipv6": "true",
-              "ipv6_pools": ["pods2", "pods", "service"]
+              "assign_ipv6": "true"
           },
           "policy": {
               "type": "k8s"
