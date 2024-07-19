@@ -1,6 +1,6 @@
 #!/bin/bash
 shopt -s expand_aliases
-curdev="$(ip route get 8.8.8.8 | sed -nr 's/.*dev ([^\ ]+).*/\1/p')"
+curdev="$(ip route get 2001:470:1b1e:c000::1 | sed -nr 's/.*dev ([^\ ]+).*/\1/p')"
 kubeversion=$(kubeadm version -o short | awk '{ print substr($1,2)}')
 alias ip4a='/sbin/ip -4 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}"'
 alias ip6a='/sbin/ip -6 -o addr show dev $curdev| awk "{split(\$4,a,\"/\");print a[1]}" |grep 2001'
